@@ -3,24 +3,27 @@
         <div class="row">
             <div class="col-md-6 offset-md-3 col-lg-6 offset-lg-3 col-sm-6 offset-sm-3">
                 <div id="login" class="mt-5 mb-5">
-                    <img src="../assets/img1.jpg" alt="" id="img">
+                    <img src="../assets/logo1.png" alt="" id="img" class="mx-auto d-block">
                     <div id="loginform">
                         <h3>Login</h3>
                         <div>
-                            <form action="" class="form">
+                            <Form @submit="login" class="form" :validation-schema="schema" v-slot="{ errors, isSubmitting }">
                                 <div class="mb-3">
                                     <label for="email" class="form-label">E-mail: </label>
-                                    <input type="email" name="email" class="form-control" id="email">
+                                    <Field type="email" name="email" class="form-control" id="email" v-model="userData.email" :class="{ 'is-invalid': errors.email }" />
+                                    <div class="invalid-feedback">{{ errors.email }}</div>
                                 </div>
                                 <div class="mb-3">
                                     <label for="password" class="form-label">Password: </label>
-                                    <input type="password" name="password" class="form-control" id="password">
+                                    <Field type="password" name="password" class="form-control" id="password" v-model="userData.password" :class="{ 'is-invalid': errors.password }" />
+                                    <div class="invalid-feedback">{{ errors.password }}</div>
                                 </div>
+                                <button class="btn btn-lg btn-primary" :disabled="isSubmitting">
+                                    Submit
+                                </button>
                             </form>
                         </div>
-                        <button class="btn btn-lg btn-primary">
-                            <RouterLink to="/signup" id="mycont"> Submit </RouterLink>
-                        </button>
+                        
                         <p class="mt-4">New user?<RouterLink to="/signup" style="text-decoration: none;"> Sign up
                             </RouterLink>instead</p>
                     </div>
@@ -28,13 +31,36 @@
             </div>
         </div>
     </div>
-
 </template>
 
-<script>
-export default {
-    name: "LoginPage",
-};
+<script setup>
+
+import { Form, Field } from 'vee-validate';
+import * as Yup from 'yup';
+import { onMounted, reactive, ref } from 'vue';
+
+import { useUserStore } from '@/stores/userStore';
+
+const userData= reactive({
+    email: ref(null),
+    password: ref(null),
+})
+
+const schema = Yup.object().shape({
+    email: Yup.string().email().required('E-mail is required'),
+    password: Yup.string().required('Password is required').min(3, 'Password must be at least 3 characters'),
+})
+
+const loginStore = useUserStore();
+
+onMounted(()=>{
+    loginStore.whichpage();
+});
+
+const login=(()=>{
+    loginStore.login(userData);
+})
+
 </script>
 
 <style scoped>
@@ -42,7 +68,7 @@ export default {
     min-width: 50vh;
     min-height: 85vh;
     overflow: hidden; 
-    background-color: rgba(253, 253, 253, 0.7);
+    background-color: rgb(253, 253, 253);
     border-radius: 10px;
     box-shadow: 3px 3px 10px #000;
 }
@@ -57,7 +83,7 @@ export default {
 }
 
 #img {
-    width: 100%;
-    height: 200px;
+    width: 50%;
+    height: 280px;
 }
 </style>

@@ -13,6 +13,51 @@ const routes =[
         name: 'SignupPage',
         component: () => import("../components/SignupPage.vue"),
         path: '/signup'
+    },
+    {
+        name: 'InfluencerHome',
+        component:() => import("../components/InfluencerHome.vue"),
+        path: '/influencer/home'
+    },
+    {
+        name: 'SponsorHome',
+        component:()=> import("../components/SponsorHome.vue"),
+        path: '/sponsor/home'
+    },
+    {
+        name: 'ProfileDetails',
+        component:()=> import("../components/ProfileDetails.vue"),
+        path: '/influencer/profile'
+    },
+    {
+        name: 'AllRequest',
+        component:()=> import("../components/AllRequest.vue"),
+        path: '/influencer/request'
+    },
+    {
+        name: 'SponsorRegistration',
+        component:()=> import("../components/SponsorRegistration.vue"),
+        path: '/sponsor/registration'
+    },
+    {
+        name: 'InfluencerRegistration',
+        component:()=> import("../components/InfluencerRegistration.vue"),
+        path: '/influencer/registration'
+    },
+    {
+        name: 'AddCampaign',
+        component:()=> import("../components/AddCampaign.vue"),
+        path: '/sponsor/campaign'
+    },
+    {
+        name: 'AddRequest',
+        component:()=> import("../components/AddRequest.vue"),
+        path: '/request/:id'
+    },
+    {
+        name: 'ViewCampaign',
+        component:()=> import("../components/ViewCampaign.vue"),
+        path: '/view'
     }
 ];
 

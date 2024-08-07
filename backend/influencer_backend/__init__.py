@@ -13,7 +13,7 @@ def app(config_class=LocalConfig):
 
     CORS(
         app,
-        origins="http:localhost:8081"
+        origins="http://localhost:8081"
     )
 
     #Register Blueprints Here
@@ -24,10 +24,14 @@ def app(config_class=LocalConfig):
     from influencer_backend.resources.userResource import UserResource
     from influencer_backend.resources.influencerResource import InfluencerResource
     from influencer_backend.resources.sponsorsResource import SponsorResource
+    from influencer_backend.resources.campaignResource import CampaignResource
+    from influencer_backend.resources.adRequestResource import AdRequestResource
 
     api.add_resource(UserResource, "/user", "/user/<int:user_id>")
     api.add_resource(InfluencerResource, "/influencer", "/influencer/<int:influencer_id>")
-    api.add_resource(SponsorResource, "/sponsor", "/sponsor/<int:influencer_id>")
+    api.add_resource(SponsorResource, "/sponsor", "/sponsor/<int:sponsor_id>")
+    api.add_resource(CampaignResource, "/campaign", "/campaign/<int:campaign_id>")
+    api.add_resource(AdRequestResource, "/adRequest", "/adRequest/<int:adRequest_id>")
 
     api.init_app(app)
 

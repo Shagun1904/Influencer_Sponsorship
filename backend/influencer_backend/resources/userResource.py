@@ -40,7 +40,7 @@ class UserResource(Resource):
         else:
             user=Users.query.filter_by(id=user_id).first()
             if not user:
-                abort(404,"user doesn't not exist")
+                abort(404,"user doesn't exist")
             args=parser.parse_args()
             user=Users.query.filter_by(id=user_id).first()
             for arg in args:

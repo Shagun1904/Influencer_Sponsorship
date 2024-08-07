@@ -81,8 +81,9 @@ def login():
         jwt = encode(
             {
                 "name": user.name,
+                "userType": user.userType,
                 "user_id": user.id,
-                "exp": datetime.utcnow() + timedelta(minutes=2),
+                "exp": datetime.utcnow() + timedelta(minutes=120),
             },
             LocalConfig.JWT_SECRET_KEY,
             algorithm="HS256",
@@ -93,8 +94,9 @@ def login():
                 "status": "ok",
                 "jwt": jwt,
                 "name": user.name,
+                "userType": user.userType,
                 "user_id": user.id,
-                "exp": (datetime.utcnow() + timedelta(minutes=2)).strftime('%Y-%m-%d %H:%M:%S'),
+                "exp": (datetime.utcnow() + timedelta(minutes=120)).strftime('%Y-%m-%d %H:%M:%S'),
             }
         ), 
         200,
