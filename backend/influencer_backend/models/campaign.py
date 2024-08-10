@@ -1,5 +1,5 @@
 from flask_login import UserMixin
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String, Boolean
 
 from influencer_backend.extensions import db
 
@@ -13,4 +13,5 @@ class Campaign(db.Model,UserMixin):
     campaignBudget=Column(Integer, nullable=False)
     visibility=Column(String(10), nullable=False)
     goal=Column(String(100), nullable=False)
+    flag=Column(Boolean, nullable=False)
     sponsor_id=Column(Integer, ForeignKey('sponsors.id'), nullable=False)

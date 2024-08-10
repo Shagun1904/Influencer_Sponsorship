@@ -6,10 +6,11 @@ from influencer_backend.extensions import db
 from influencer_backend.models.users import Users
 
 parser= reqparse.RequestParser()
-parser.add_argument("name",type=str,required=True)
+parser.add_argument("name",type=str)
 parser.add_argument("email", type=str, required=True)
 parser.add_argument("password",type=str,required=True)
 parser.add_argument("userType",type=str,required=True)
+parser.add_argument("flag",type=bool,required=True)
 
 user_fields= {
     "id": fields.Integer,
@@ -17,6 +18,7 @@ user_fields= {
     "email": fields.String,
     "userType": fields.String,
     "password": fields.String,
+    "flag": fields.Boolean,
 }
 
 class UserResource(Resource):

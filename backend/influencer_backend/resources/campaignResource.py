@@ -16,6 +16,7 @@ parser.add_argument("endDate",type=str,required=True)
 parser.add_argument("campaignBudget",type=int,required=True)
 parser.add_argument("visibility",type=str,required=True)
 parser.add_argument("goal",type=str,required=True)
+parser.add_argument("flag",type=bool,required=True)
 parser.add_argument("sponsor_id",type=int,required=True)
 
 campaign_fields= {
@@ -27,6 +28,7 @@ campaign_fields= {
     "campaignBudget": fields.Integer,
     "visibility": fields.String,
     "goal": fields.String,
+    "flag": fields.Boolean,
     "sponsor_id": fields.Integer,
 }
 

@@ -13,3 +13,4 @@ class AdRequest(db.Model,UserMixin):
     sendBy=Column(String(10))
     campaign_id=Column(Integer, ForeignKey('campaign.id'), nullable=False)
     influencer_id=Column(Integer, ForeignKey('influencers.id'))
+    sponsor_id=Column(Integer, ForeignKey('sponsors.id'), nullable=False)

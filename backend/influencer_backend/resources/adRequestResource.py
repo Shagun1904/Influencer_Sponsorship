@@ -15,6 +15,7 @@ parser.add_argument("status",type=str,required=True)
 parser.add_argument("sendBy",type=str)
 parser.add_argument("campaign_id",type=int,required=True)
 parser.add_argument("influencer_id",type=int)
+parser.add_argument("sponsor_id",type=int)
 
 adRequest_fields= {
     "id": fields.Integer,
@@ -25,6 +26,7 @@ adRequest_fields= {
     "sendBy": fields.String,
     "campaign_id": fields.Integer,
     "influencer_id": fields.Integer,
+    "sponsor_id": fields.Integer
 }
 
 class AdRequestResource(Resource):
@@ -33,7 +35,7 @@ class AdRequestResource(Resource):
         if adRequest_id:
             adRequest=AdRequest.query.filter_by(id=adRequest_id).first()
             if not adRequest:
-                abort(404,"user doesn't exit")
+                abort(404,"Request doesn't exit")
             else:
                 return adRequest, 200
         else:
@@ -47,7 +49,7 @@ class AdRequestResource(Resource):
         else:
             adRequest=AdRequest.query.filter_by(id=adRequest_id).first()
             if not adRequest:
-                abort(404,"user doesn't not exist")
+                abort(404,"Request doesn't not exist")
             args=parser.parse_args()
             adRequest=AdRequest.query.filter_by(id=adRequest_id).first()
             for arg in args:
@@ -65,7 +67,7 @@ class AdRequestResource(Resource):
             db.session.commit()
         except IntegrityError as e:
             db.session.rollback()
-            abort(409, "User already exists")
+            abort(409, "Request already exists")
         return adRequest, 201
 
     @marshal_with(adRequest_fields)
@@ -75,7 +77,7 @@ class AdRequestResource(Resource):
         else:
             adRequest = AdRequest.query.filter_by(id=adRequest_id).first()
             if not adRequest:
-                abort(404,"user doesn't not exist")
+                abort(404,"Request doesn't not exist")
             db.session.delete(adRequest)
             db.session.commit()
             return adRequest, 200    

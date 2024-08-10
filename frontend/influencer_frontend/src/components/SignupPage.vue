@@ -57,6 +57,7 @@ const userData= reactive({
     name: ref(null),
     email: ref(null),
     userType: ref(null),
+    flag: ref(null),
     password: ref(null),
 })
 
@@ -70,6 +71,12 @@ const schema = Yup.object().shape({
 })
 
 const onSubmit= (()=>{
+    if (userData.userType == 'sponsor'){
+        userData.flag = true;
+    }
+    else {
+        userData.flag = false;
+    }
     userStore.signup(userData);
 })
 

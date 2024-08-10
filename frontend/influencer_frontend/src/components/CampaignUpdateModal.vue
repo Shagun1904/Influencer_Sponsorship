@@ -88,6 +88,7 @@ const campaignData = reactive({
     campaignBudget: ref(props.campaign.campaignBudget),
     visibility: ref(props.campaign.visibility),
     goal: ref(props.campaign.goal),
+    flag: ref(props.campaign.flag),
     sponsor_id: ref(props.campaign.sponsor_id)
 })
 

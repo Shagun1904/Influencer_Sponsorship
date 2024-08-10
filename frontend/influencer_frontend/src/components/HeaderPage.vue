@@ -13,7 +13,7 @@
                         <router-link class="nav-link active" to="/influencer/home">Home</router-link>
                     </li>
                     <li class="nav-item">
-                        <router-link class="nav-link" to="/influencer/request">Request</router-link>
+                        <router-link class="nav-link" to="/request">Request</router-link>
                     </li>
                 </ul>
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0" v-if="userType === 'sponsor'">
@@ -23,16 +23,20 @@
                     <li class="nav-item">
                         <router-link class="nav-link" to="/view">Campaign</router-link>
                     </li>
+                    <li class="nav-item">
+                        <router-link class="nav-link" to="/request">Request</router-link>
+                    </li>
                 </ul>
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0" v-if="userType === 'admin'">
+                    <li><a class="dropdown-item" v-on:click="logout">Logout</a></li>
+                </ul>
+                <ul class="navbar-nav ms-auto" v-if="userType != 'admin'">
                     <li class="nav-item dropdown pe-5">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
-                            {{ name }}
+                            {{ userData.name }}
                         </a>
                         <ul class="dropdown-menu mydropdown" v-if="userType === 'influencer'">
-                            <li> <router-link to="/influencer/profile" class="dropdown-item"> Profile </router-link>
-                            </li>
                             <li><a class="dropdown-item" href="#">Stats</a></li>
                             <li>
                                 <hr class="dropdown-divider">
@@ -40,8 +44,6 @@
                             <li><a class="dropdown-item" v-on:click="logout">Logout</a></li>
                         </ul>
                         <ul class="dropdown-menu mydropdown" v-if="userType === 'sponsor'">
-                            <li> <router-link to="/sponsor/profile" class="dropdown-item"> Profile </router-link>
-                            </li>
                             <li><a class="dropdown-item" href="#">Stats</a></li>
                             <li>
                                 <hr class="dropdown-divider">
@@ -56,13 +58,13 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();
-const userType = localStorage.getItem('userType')
-const name = localStorage.getItem('name')
+const userType = localStorage.getItem('userType');
+const userData = ref([]);
 
 const userlogged = computed(() => {
     if (route.path == '/' || route.path == '/signup' || route.path == '/sponsor/registration' || route.path == '/influencer/registration') {
@@ -72,6 +74,8 @@ const userlogged = computed(() => {
         return true;
     }
 })
+
+
 
 function logout() {
     localStorage.clear();

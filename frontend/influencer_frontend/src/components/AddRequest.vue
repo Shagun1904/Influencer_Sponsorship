@@ -29,8 +29,8 @@
                                     <Field type="number" name="influencer_id" class="form-control"
                                     v-model="requestData.influencer_id" disabled></Field>
                                 </div>
-                                <div>
-                                    <button type="button" class="btn btn-danger ms-2" @click="sendRequest()">Send</button>
+                                <div v-if="userType =='influencer'">
+                                    <button class="btn btn-danger ms-2 col-md-4" :disabled="isSubmitting">Send</button>
                                 </div>
                                 <div class="mb-3 col-md-3 d-flex" v-if="userType == 'sponsor'">
                                     <Field type="number" name="influencer_id" class="form-control"
@@ -65,11 +65,11 @@
                     </div>
                     <div class="card-footer text-body-secondary d-flex justify-content-around">
                         <p>Start date: {{ campaign.startDate }}</p>
-                        <p> End date: {{ campaign.endDate }} </p>
+                        <p>End date: {{ campaign.endDate }} </p>
                     </div>
                     <div class="card-footer text-body-secondary myCardFooter" v-if="userType == 'sponsor'">
-                        <h5>Request</h5>
-                        <table class="table table-light">
+                        <h5 class="fw-bolder" v-if="requestSendBySponsor.length>0">Request sent by you</h5>
+                        <table class="table table-bordered myTable" v-if="requestSendBySponsor.length>0">
                             <tr>
                                 <th>Message</th>
                                 <th>Requirements</th>
@@ -78,17 +78,43 @@
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
-                            <tr v-for="request in allAdRequest" :key="request.id">
+                            <tr v-for="request in requestSendBySponsor" :key="request.id">
+                                <td class="table-info" >{{ request.message }}</td>
+                                <td class="table-info" >{{ request.requirement }}</td>
+                                <td class="table-info" >{{ request.paymentAmount }}</td>
+                                <td class="table-info" >{{ request.influencer_id }}</td>
+                                <td class="table-info" >{{ request.status }}</td>
+                                <td><button class="btn btn-warning m-2" @click="openModal(request)" 
+                                    v-if="request.status !== 'Rejected'">Update</button>
+                                    <component :is="requestUpdateModal" :adRequest="currentSelectedAdRequest"
+                                        @close="closeModal" v-if="isModalVisible" @submit="handleModalSubmit">
+                                    </component>
+                                    <button class="btn btn-danger m-2" @click="deleteRequest(request.id)">Delete</button>
+                                </td>
+                            </tr>
+                        </table>
+                        <h5 class="fw-bolder" v-if="requestSendByInfluencer.length>0">Received Request</h5>
+                        <table class="table table-light" v-if="requestSendByInfluencer.length>0">
+                            <tr>
+                                <th>Message</th>
+                                <th>Requirements</th>
+                                <th>Payment</th>
+                                <th>Assignee</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                            <tr v-for="request in requestSendByInfluencer" :key="request.id">
                                 <td>{{ request.message }}</td>
                                 <td>{{ request.requirement }}</td>
                                 <td>{{ request.paymentAmount }}</td>
                                 <td>{{ request.influencer_id }}</td>
                                 <td>{{ request.status }}</td>
-                                <td><button class="btn btn-warning" @click="openModal(request)">Update</button>
-                                    <component :is="requestUpdateModal" :adRequest="currentSelectedAdRequest"
-                                        @close="closeModal" v-if="isModalVisible" @submit="handleModalSubmit">
+                                <td><button class="btn btn-info" @click="openNegotiateModal(request)">Negotiate</button>
+                                    <component :is="requestNegotiateModal" :negotiateAdRequest="currentNegotiateAdRequest"
+                                        @close="closeNegotiateModal" v-if="isNegotiateModalVisible" @submit="handleNegotiateModalSubmit">
                                     </component>
-                                    <button class="btn btn-danger" @click="deleteRequest(request.id)">Delete</button>
+                                    <button class="btn btn-danger m-2" @click="requestRejected(request)">Reject</button>
+                                    <button class="btn btn-success" @click="requestAccepted(request)">Accept</button>
                                 </td>
                             </tr>
                         </table>
@@ -107,24 +133,18 @@ import { reactive, ref, onMounted, shallowRef, defineAsyncComponent } from 'vue'
 import { useRoute, useRouter } from 'vue-router';
 import { useRequestStore } from '../stores/requestStore';
 import { useCampaignStore } from '../stores/campaignStore';
-import { useInfluencerStore } from '../stores/influencerStore';
 
 const requestStore = useRequestStore();
 const campaignStore = useCampaignStore();
-const influencerStore = useInfluencerStore();
 const route = useRoute();
 const myRouter = useRouter();
 const campaign = ref({});
 const userType= localStorage.getItem('userType')
-const user_id = localStorage.getItem('user_id')
-
+let requestSendBySponsor = ref([]);
+let requestSendByInfluencer = ref([]);
 
 // Influencer
-const getInfluencerId = ( async ()=>{
-    await influencerStore.getAllInfluencer();
-    let result = influencerStore.allInfluencer.filter(i =>  i.user_id == user_id);
-    requestData.influencer_id=result[0].id
-})
+
 
 //Sponsor
 const requestData = reactive({
@@ -132,6 +152,7 @@ const requestData = reactive({
     requirement: ref(null),
     payment: ref(null),
     influencer_id: ref(null),
+    sponsor_id: ref(null)
 })
 
 const schema = Yup.object().shape({
@@ -141,7 +162,6 @@ const schema = Yup.object().shape({
     influencer_id: Yup.number().required('Select influencer to create request')
 })
 
-
 let allAdRequest = ref([])
 
 const onSubmit = (async () => {
@@ -150,17 +170,19 @@ const onSubmit = (async () => {
     myRouter.push('/request/' + route.params.id);
 })
 
-
 onMounted(async () => {
     let result = await campaignStore.getCampaignById(route.params.id);
     campaign.value = result.campaign;
-    await updateRequestList();
-    await getInfluencerId();
+    await updateRequestListForSponsor();
+    if (userType =='influencer'){
+        requestData.influencer_id = localStorage.getItem('influencer_id')
+    }
 })
 
-const updateRequestList = (async () => {
-    let result = await requestStore.getAllAdRequest();
-    allAdRequest.value = result.allAdRequestData;
+const updateRequestListForSponsor = (async () => {
+    let result = await requestStore.getAllAdRequestByCampaignId();
+    requestSendBySponsor.value = result.allAdRequestData.filter(i => i.sendBy == "sponsor");
+    requestSendByInfluencer.value = result.allAdRequestData.filter(i => i.sendBy == "influencer");
 })
 
 const deleteRequest = (async (id) => {
@@ -186,12 +208,12 @@ const closeSearchModal = (async () => {
     searchModal.value = null;
 });
 
-const handleAssign= ((influencer_id)=>{
+const handleAssign= ( async (influencer_id)=>{
     requestData.influencer_id= influencer_id;
     closeSearchModal();
 });
 
-//modal
+//request modal
 
 const isModalVisible = shallowRef(false);
 const requestUpdateModal = shallowRef(null);
@@ -207,16 +229,71 @@ const closeModal = (async () => {
     currentSelectedAdRequest.value = null;
     isModalVisible.value = false;
     requestUpdateModal.value = null;
-    await updateRequestList();
+    await updateRequestListForSponsor();
 });
 
-const handleModalSubmit = ((formData) => {
-    requestStore.updateRequest(formData);
+const handleModalSubmit = (async (formData) => {
+    await requestStore.updateRequest(formData);
     closeModal();
-    updateRequestList();
+    await updateRequestListForSponsor();
 });
 
+//Negotiate Request
 
+const isNegotiateModalVisible = shallowRef(false);
+const requestNegotiateModal = shallowRef(null);
+const currentNegotiateAdRequest = ref(null);
+
+const openNegotiateModal = (adRequest) => {
+    currentNegotiateAdRequest.value = { ...adRequest };
+    requestNegotiateModal.value = defineAsyncComponent(() => import("../components/RequestNegotiate.vue"))
+    isNegotiateModalVisible.value = true;
+};
+
+const closeNegotiateModal = (async () => {
+    currentNegotiateAdRequest.value = null;
+    isNegotiateModalVisible.value = false;
+    requestNegotiateModal.value = null;
+    await updateRequestListForSponsor();
+});
+
+const handleNegotiateModalSubmit = (async (formData) => {
+    await requestStore.updateRequest(formData);
+    closeNegotiateModal();
+    await updateRequestListForSponsor();
+});
+
+//Request actions 
+
+const requestRejected = (async (request)=>{
+    const formData = reactive({
+    id: ref(request.id),
+    message: ref(request.message),
+    requirement: ref(request.requirement),
+    paymentAmount: ref(request.paymentAmount),
+    status: "Rejected",
+    sendBy: localStorage.getItem('userType'),
+    campaign_id: ref(request.campaign_id),
+    influencer_id: ref(request.influencer_id)
+})
+    await requestStore.updateRequest(formData);
+    await updateRequestListForSponsor();
+})
+
+const requestAccepted = (async (request)=>{
+    const formData = reactive({
+    id: ref(request.id),
+    message: ref(request.message),
+    requirement: ref(request.requirement),
+    paymentAmount: ref(request.paymentAmount),
+    status: "Accepted",
+    sendBy: localStorage.getItem('userType'),
+    campaign_id: ref(request.campaign_id),
+    influencer_id: ref(request.influencer_id)
+})
+    await requestStore.updateRequest(formData);
+    await updateRequestListForSponsor();
+})
 
 </script>
 

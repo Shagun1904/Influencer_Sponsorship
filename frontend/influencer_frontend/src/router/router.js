@@ -25,6 +25,11 @@ const routes =[
         path: '/sponsor/home'
     },
     {
+        name: 'AdminHome',
+        component:()=> import("../components/AdminHome.vue"),
+        path: '/admin'
+    },
+    {
         name: 'ProfileDetails',
         component:()=> import("../components/ProfileDetails.vue"),
         path: '/influencer/profile'
@@ -32,7 +37,7 @@ const routes =[
     {
         name: 'AllRequest',
         component:()=> import("../components/AllRequest.vue"),
-        path: '/influencer/request'
+        path: '/request'
     },
     {
         name: 'SponsorRegistration',

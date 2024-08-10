@@ -3,11 +3,14 @@ import { defineStore } from "pinia";
 import { useAlertStore } from '../stores/alertStore';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
+import { useRequestStore } from "./requestStore";
+
 
 export const useCampaignStore = defineStore('campaignStore', () => {
     const alertStore = useAlertStore();
     const myRouter = useRouter();
     const currentCampaign = ref(null);
+    const requestStore = useRequestStore();
 
     async function campaignData(campaignData){
         const campaignDetails = {
@@ -18,7 +21,8 @@ export const useCampaignStore = defineStore('campaignStore', () => {
             campaignBudget: campaignData.campaignBudget,
             visibility: campaignData.visibility,
             goal: campaignData.goal,
-            sponsor_id: localStorage.getItem('user_id')
+            flag: true,
+            sponsor_id: localStorage.getItem('sponsor_id')
         }
         try{
             await axios.post(`http://127.0.0.1:5000/campaign`, campaignDetails);
@@ -78,11 +82,30 @@ export const useCampaignStore = defineStore('campaignStore', () => {
         }
     }
 
+    async function deleteCampaignById(id){
+        try{
+            let allRequest = []
+            let result = await requestStore.getAllRequest();
+            allRequest = result.allRequestData;
+            for (const i in allRequest){
+                if (allRequest[i].campaign_id ==id && (allRequest[i].status =='Negotiate' || allRequest[i].status == 'Pending')){
+                    await requestStore.deleteRequestById(allRequest[i].id)
+                }
+            }
+            await axios.delete(`http://127.0.0.1:5000/campaign/${id}`);
+            alertStore.success("Campaign deleted successfully");
+        }
+        catch (error){
+            console.log(error);
+        }
+    }
+
     return {
         campaignData,
         getAllCampaign,
         getCampaignById,
         currentCampaign,
-        updateCampaign
+        updateCampaign,
+        deleteCampaignById
     }
 })

@@ -57,7 +57,6 @@ export const useInfluencerStore = defineStore('influencerStore', () => {
                     Authorization: "Bearer " + localStorage.getItem("jwt")
                 }
             })
-            console.log(id)
             let allInfluencerData = result.data;
             let influencer = {}
             for (let s in allInfluencerData){
@@ -75,10 +74,22 @@ export const useInfluencerStore = defineStore('influencerStore', () => {
         }
     }
 
+    async function updateInfluencer(formData){
+        try{
+            await axios.put(`http://127.0.0.1:5000/influencer/${formData.id}`, formData)
+            alertStore.success("Details updated successfully")
+        }
+        catch(error){
+            alertStore.error("Something went wrong. Try after sometime.")
+            console.log(error)
+        }
+    }
+
     return{
         getAllInfluencer,
         allInfluencer,
         influencerDetails,
-        getInfluencerById
+        getInfluencerById,
+        updateInfluencer
     }
 })
