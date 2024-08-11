@@ -47,6 +47,8 @@ const userData = reactive({
     name: ref(props.user.name),
     email: ref(props.user.email),
     userType: ref(props.user.userType),
+    flag: ref(props.user.flag),
+    status: ref(props.user.status),
     password: ref(props.user.password)
 })
 

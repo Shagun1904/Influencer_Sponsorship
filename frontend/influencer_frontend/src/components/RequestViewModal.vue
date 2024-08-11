@@ -3,23 +3,12 @@
         <div v-if="isVisible" class="modal-overlay" @click.self="closeModal">
             <div class="modal-content">
                 <div class="modal-header d-flex mb-3">
-                    <h2 class="modal-title text-danger text-center">User Details</h2>
+                    <h2 class="modal-title text-danger text-center">All request</h2>
                     <button type="button" class="btn-close ms-auto" @click="closeModal"></button>
                 </div>
                 <div class="modal-body">
-                    <div v-if="props.user.companyName">
-                        <h4><strong>Company name: </strong> {{ props.user.companyName }}</h4>
-                        <h4><strong>Industry: </strong> {{ props.user.industry }}</h4>
-                        <h4><strong>Budget: </strong> {{ props.user.budget }}</h4>
-                    </div>
-                    <div v-if="props.user.niche">
-                        <h4><strong>Category: </strong> {{ props.user.category }}</h4>
-                        <h4><strong>Reach: </strong> {{ props.user.reach }}</h4>
-                        <h4><strong>Niche: </strong> {{ props.user.niche }}</h4>
-                        <h4>Links: <a href="{{ props.user.furl }}">Facebook</a>, 
-                            <a href="{{ props.user.iurl }}">Instagram</a>, 
-                            <a href="{{ props.user.lurl }}">Linkedin</a></h4>
-                    </div>
+                    <div v-for="c in props.request" :key="c.id"></div>
+                    <h4>{{ props.request }}</h4>
                 </div>
             </div>
         </div>
@@ -31,7 +20,7 @@ import { defineEmits, ref, defineProps } from 'vue';
 // import { Form, Field } from 'vee-validate';
 
 const props = defineProps({
-    user: {
+    request: {
         type: Object,
         required: true,
     }

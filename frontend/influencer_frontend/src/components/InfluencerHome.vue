@@ -89,7 +89,7 @@ const closeModal = (async () => {
 const handleModalSubmit = (async (formData) => {
     await userStore.updateUser(formData);
     closeModal();
-    await getInfluencerDetails();
+    await getUser();
 });
 
 //Influencer Details Update Modal

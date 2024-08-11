@@ -12,9 +12,11 @@
                                 class="col-md-3 col-lg-3 col-sm-10 ">
                                 <div class="card text-bg-secondary mb-3" style="max-width: 18rem;">
                                     <div class="card-header">{{ campaign.name }} <button disabled="disabled" 
-                                        class="btn btn-danger btn-sm" v-if="campaign.visibility == 'private'">{{ campaign.visibility }}</button> 
+                                        class="btn btn-warning btn-sm" v-if="campaign.visibility == 'private'">{{ campaign.visibility }}</button> 
                                         <button disabled="disabled" 
-                                        class="btn btn-success btn-sm" v-if="campaign.visibility == 'public'">{{ campaign.visibility }}</button></div>
+                                        class="btn btn-success btn-sm" v-if="campaign.visibility == 'public'">{{ campaign.visibility }}</button>
+                                        <button disabled="disabled" 
+                                        class="btn btn-danger btn-sm" v-if="campaign.flag == true">Blocked</button></div>
                                     <div class="card-header">{{ campaign.campaignBudget }}</div>
                                     <div class="card-body">
                                         <h5 class="card-title">{{ campaign.startDate }}</h5>
@@ -73,12 +75,13 @@ const handleModalSubmit = ((formData) => {
 const updateCampaignList = (async () => {
     let result = await campaignStore.getAllCampaign();
     if (userType == 'sponsor'){
-        console.log("inside if")
         allCampaign.value = result.allCampaignsData.filter(c => 
         c.sponsor_id == localStorage.getItem('sponsor_id'));
     }
     else if (userType == 'influencer'){
-        allCampaign.value = result.allCampaignsData;
+        allCampaign.value = result.allCampaignsData.filter(c=>
+            c.flag == false
+        )
     }
     
 });

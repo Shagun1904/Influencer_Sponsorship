@@ -51,7 +51,6 @@ onMounted(async() => {
 
 async function getUser() {
     let result = await userStore.getUserById(user_id);
-    console.log(result.userData);
     userData.value = result.userData
 }
 
@@ -86,7 +85,7 @@ const handleModalSubmit = (async (formData) => {
     }, 1000);
 });
 
-//Influencer Details Update Modal
+//sponsor Details Update Modal
 
 const isModal2Visible = shallowRef(false);
 const sponsorUpdateModal = shallowRef(null);

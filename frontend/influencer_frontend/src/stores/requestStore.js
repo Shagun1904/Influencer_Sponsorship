@@ -53,6 +53,25 @@ export const useRequestStore = defineStore('requestStore', () => {
         }
     }
 
+    async function getCampaignByRequestId(id){
+        try{
+            let result = await axios.get(`http://127.0.0.1:5000/campaign`);
+            let data = result.data;
+            let campaign =[]
+            for (let i in data){
+                if (data[i].id==id){
+                    campaign.push(data[i])
+                }
+            }
+            return {
+                campaign
+            }
+        }
+        catch(error){
+            console.log(error)
+        }
+    }
+
     async function getAllRequest(){
         let result =await axios.get(`http://127.0.0.1:5000/adRequest`);
             let data = result.data;
@@ -92,5 +111,6 @@ export const useRequestStore = defineStore('requestStore', () => {
         deleteRequestById,
         updateRequest,
         getAllRequest,
+        getCampaignByRequestId
     }
 })

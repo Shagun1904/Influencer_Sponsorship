@@ -75,7 +75,7 @@ const campaignData= reactive({
     campaignBudget: ref(null),
     visibility: ref(null),
     goal: ref(null),
-    flag: ref(null),
+    flag: ref(false),
 })
 
 const campaignStore= useCampaignStore();

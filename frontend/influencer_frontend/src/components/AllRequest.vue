@@ -34,6 +34,11 @@
                                         @close="closeNegotiateModal" v-if="isNegotiateModalVisible" @submit="handleNegotiateModalSubmit">
                                     </component>
                                     <button class="btn btn-danger m-2 ms-auto" @click="requestRejected(request)">Reject</button>
+                                    <button class="btn btn-info m-2"
+                                        @click="openModal(request)">View</button>
+                                    <component :is="campaignModal" :campaign="currentSelectedCampaign" @close="closeModal"
+                                        v-if="isModalVisible">
+                                    </component>
                                 </div>
                             </div>
                         </div>
@@ -45,10 +50,18 @@
                             <div class="card-body">
                                 <div v-if="request.status !== 'Pending'"><button class="btn btn-secondary mb-1" disabled>You {{ request.status }}</button></div>
                                 <div v-if="request.status == 'Pending'"><button class="btn btn-secondary mb-1" disabled>You Requested</button></div>
-                                
                                 <p class="card-text"><strong>Message: </strong>{{ request.message }}</p>
                                 <p class="card-text"><strong>Requirement: </strong>{{ request.requirement }}</p>
                                 <p class="card-text"><strong>Payment: </strong>{{ request.paymentAmount }}</p>
+                            </div>
+                            <div class="card-footer">
+                                <div class="d-flex">
+                                    <button class="btn btn-info m-2"
+                                        @click="openModal(request)">View</button>
+                                    <component :is="campaignModal" :campaign="currentSelectedCampaign" @close="closeModal"
+                                        v-if="isModalVisible">
+                                    </component>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -145,6 +158,25 @@ const handleNegotiateModalSubmit = (async (formData) => {
     requestStore.updateRequest(formData);
     closeNegotiateModal();
     await updateRequestList();
+});
+
+// View Campaign Detail Modal
+
+const isModalVisible = shallowRef(false);
+const campaignModal = shallowRef(null);
+const currentSelectedCampaign = ref(null);
+
+const openModal = (async (request) => {
+    let result = await requestStore.getCampaignByRequestId(request.id)
+    currentSelectedCampaign.value = { ...result.campaign};
+    campaignModal.value = defineAsyncComponent(() => import("../components/CampaignViewModal.vue"))
+    isModalVisible.value = true;
+});
+
+const closeModal = (async () => {
+    currentSelectedCampaign.value = null;
+    isModalVisible.value = false;
+    campaignModal.value = null;
 });
 
 </script>

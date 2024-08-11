@@ -21,7 +21,7 @@ export const useCampaignStore = defineStore('campaignStore', () => {
             campaignBudget: campaignData.campaignBudget,
             visibility: campaignData.visibility,
             goal: campaignData.goal,
-            flag: true,
+            flag: campaignData.flag,
             sponsor_id: localStorage.getItem('sponsor_id')
         }
         try{
