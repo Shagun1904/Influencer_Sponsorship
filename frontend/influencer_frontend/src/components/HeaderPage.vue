@@ -8,12 +8,20 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0" v-if="checkUserType.userType === 'admin'">
+                    <li class="nav-item">
+                        <router-link class="nav-link active" to="/admin">Home</router-link>
+                    </li>
+                </ul>
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0" v-if="checkUserType.userType === 'influencer'">
                     <li class="nav-item">
                         <router-link class="nav-link active" to="/influencer/home">Home</router-link>
                     </li>
                     <li class="nav-item">
                         <router-link class="nav-link" to="/request">Request</router-link>
+                    </li>
+                    <li class="nav-item">
+                        <router-link class="nav-link" to="/view">Campaign</router-link>
                     </li>
                 </ul>
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0" v-if="checkUserType.userType === 'sponsor'">
@@ -23,9 +31,6 @@
                     <li class="nav-item">
                         <router-link class="nav-link" to="/view">Campaign</router-link>
                     </li>
-                    <li class="nav-item">
-                        <router-link class="nav-link" to="/request">Request</router-link>
-                    </li>
                 </ul>
                 <ul class="navbar-nav ms-auto" v-if="checkUserType.userType !== 'admin'">
                     <li class="nav-item dropdown pe-5">
@@ -34,14 +39,14 @@
                             Profile
                         </a>
                         <ul class="dropdown-menu mydropdown" v-if="checkUserType.userType === 'influencer'">
-                            <li><a class="dropdown-item" href="#">Stats</a></li>
+                            <li><router-link class="dropdown-item" to="/stats">Stats</router-link></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
                             <li><a class="dropdown-item" @click="logout">Logout</a></li>
                         </ul>
                         <ul class="dropdown-menu mydropdown" v-if="checkUserType.userType === 'sponsor'">
-                            <li><a class="dropdown-item" href="#">Stats</a></li>
+                            <li><router-link class="dropdown-item" to="/stats">Stats</router-link></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -50,7 +55,8 @@
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0" v-if="checkUserType.userType === 'admin'">
-                    <li><a class="dropdown-item" @click="logout">Logout</a></li>
+                    <li class="nav-item" ><a class="dropdown-item" @click="logout">Logout</a></li>
+                    <li class="nav-item ms-3"><router-link class="dropdown-item" to="/stats">Stats</router-link></li>
                 </ul>
             </div>
         </div>

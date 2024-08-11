@@ -59,8 +59,6 @@ const searchData = reactive({
     search: ref(null)
 })
 
-
-
 const searchedData = ref([])
 
 const schema = Yup.object().shape({

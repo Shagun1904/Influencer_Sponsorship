@@ -8,11 +8,13 @@
                 </div>
                 <div class="modal-body">
                     <div v-if="props.user.companyName">
+                        <h4><strong>Sponsor Id </strong> {{ props.user.id }}</h4>
                         <h4><strong>Company name: </strong> {{ props.user.companyName }}</h4>
                         <h4><strong>Industry: </strong> {{ props.user.industry }}</h4>
                         <h4><strong>Budget: </strong> {{ props.user.budget }}</h4>
                     </div>
                     <div v-if="props.user.niche">
+                        <h4><strong>Influencer Id: </strong> {{ props.user.id }}</h4>
                         <h4><strong>Category: </strong> {{ props.user.category }}</h4>
                         <h4><strong>Reach: </strong> {{ props.user.reach }}</h4>
                         <h4><strong>Niche: </strong> {{ props.user.niche }}</h4>

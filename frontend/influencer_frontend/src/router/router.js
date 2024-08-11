@@ -63,6 +63,11 @@ const routes =[
         name: 'ViewCampaign',
         component:()=> import("../components/ViewCampaign.vue"),
         path: '/view'
+    },
+    {
+        name: 'StatisticsPage',
+        component:()=> import("../components/StatisticsPage.vue"),
+        path: '/stats'
     }
 ];
 

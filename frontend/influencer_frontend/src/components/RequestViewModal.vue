@@ -3,12 +3,36 @@
         <div v-if="isVisible" class="modal-overlay" @click.self="closeModal">
             <div class="modal-content">
                 <div class="modal-header d-flex mb-3">
-                    <h2 class="modal-title text-danger text-center">All request</h2>
+                    <h2 class="modal-title text-danger text-center">All Requests</h2>
                     <button type="button" class="btn-close ms-auto" @click="closeModal"></button>
                 </div>
                 <div class="modal-body">
-                    <div v-for="c in props.request" :key="c.id"></div>
-                    <h4>{{ props.request }}</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Message</th>
+                                <th>Requirement</th>
+                                <th>Payment Amount</th>
+                                <th>Status</th>
+                                <th>Sent By</th>
+                                <th>Influencer Id</th>
+                                <th>Campaign Id</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(request, index) in requestArray" :key="index">
+                                <td>{{ request.id }}</td>
+                                <td>{{ request.message }}</td>
+                                <td>{{ request.requirement }}</td>
+                                <td>{{ request.paymentAmount }}</td>
+                                <td>{{ request.status }}</td>
+                                <td>{{ request.sendBy }}</td>
+                                <td>{{ request.influencer_id }}</td>
+                                <td>{{ request.campaign_id }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -16,28 +40,25 @@
 </template>
 
 <script setup>
-import { defineEmits, ref, defineProps } from 'vue';
-// import { Form, Field } from 'vee-validate';
+import { ref, defineProps, defineEmits, computed } from 'vue';
 
 const props = defineProps({
     request: {
         type: Object,
         required: true,
     }
-    
-})
+});
 
-const isVisible = ref(true)
+const isVisible = ref(true);
 
-const emits = defineEmits(['close', 'submit']);
+const emits = defineEmits(['close']);
 
 const closeModal = () => {
     isVisible.value = false;
     emits('close');
 };
 
-
-
+const requestArray = computed(() => Object.values(props.request));
 </script>
 
 <style scoped>
@@ -58,8 +79,28 @@ const closeModal = () => {
     padding: 20px;
     border-radius: 5px;
     width: 90%;
-    max-width: 500px;
-    max-height: 80dvh;
-    overflow-y: scroll;
+    max-width: 1200px;
+    max-height: 400dvh;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    margin-bottom: 1rem;
+    color: #212529;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 0.75rem;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+}
+
+.table th {
+    text-align: inherit;
+    background-color: #f8f9fa;
 }
 </style>
