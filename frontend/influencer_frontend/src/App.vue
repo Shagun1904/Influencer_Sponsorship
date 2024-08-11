@@ -20,7 +20,8 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   background-color: #712458;
   background-image: linear-gradient(147deg, #712458 0%, #bf2f2c 74%);
-  background-size: auto;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 </style>
 <!-- colors

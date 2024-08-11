@@ -11,6 +11,7 @@ parser.add_argument("email", type=str, required=True)
 parser.add_argument("password",type=str,required=True)
 parser.add_argument("userType",type=str,required=True)
 parser.add_argument("flag",type=bool,required=True)
+parser.add_argument("status",type=str,required=True)
 
 user_fields= {
     "id": fields.Integer,
@@ -19,6 +20,7 @@ user_fields= {
     "userType": fields.String,
     "password": fields.String,
     "flag": fields.Boolean,
+    "status": fields.String
 }
 
 class UserResource(Resource):

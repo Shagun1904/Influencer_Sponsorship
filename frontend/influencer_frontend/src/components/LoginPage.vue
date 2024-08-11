@@ -37,7 +37,7 @@
 
 import { Form, Field } from 'vee-validate';
 import * as Yup from 'yup';
-import { onMounted, reactive, ref } from 'vue';
+import { reactive, ref } from 'vue';
 
 import { useUserStore } from '@/stores/userStore';
 
@@ -53,12 +53,8 @@ const schema = Yup.object().shape({
 
 const loginStore = useUserStore();
 
-onMounted(()=>{
-    loginStore.whichpage();
-});
-
-const login=(()=>{
-    loginStore.login(userData);
+const login=(async()=>{
+    await loginStore.login(userData);
 })
 
 </script>

@@ -57,7 +57,8 @@ const userData= reactive({
     name: ref(null),
     email: ref(null),
     userType: ref(null),
-    flag: ref(null),
+    flag: ref(false),
+    status: ref(null),
     password: ref(null),
 })
 
@@ -72,10 +73,10 @@ const schema = Yup.object().shape({
 
 const onSubmit= (()=>{
     if (userData.userType == 'sponsor'){
-        userData.flag = true;
+        userData.status = "pending";
     }
     else {
-        userData.flag = false;
+        userData.status = "approved";
     }
     userStore.signup(userData);
 })

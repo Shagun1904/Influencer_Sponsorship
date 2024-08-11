@@ -11,5 +11,6 @@ class Users(db.Model,UserMixin):
     userType = Column(String(50), nullable=False)
     password = Column(String(500), nullable=False)
     flag = Column(Boolean, nullable=False)
+    status = Column(String(10), nullable= False)
     sponsors = db.relationship('Sponsors', backref='users', lazy=True)
     influencers = db.relationship('Influencers', backref='users', lazy=True)

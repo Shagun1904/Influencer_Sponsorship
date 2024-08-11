@@ -21,6 +21,7 @@ export const useUserStore = defineStore('userStore', () => {
             userType: userData.userType,
             password: userData.password,
             flag: userData.flag,
+            status: userData.status
         }
         try {
             let result= await axios.post(`http://127.0.0.1:5000/user`, userDetails);
@@ -44,27 +45,27 @@ export const useUserStore = defineStore('userStore', () => {
         }
     }
 
-    async function whichpage() {
-        let user_id = localStorage.getItem("user_id")
-        if (user_id) {
-            let result= await getUserById(user_id)
-            if (result){
-                let data=result.userData
-                let userT = localStorage.getItem("userType");
-                if (userT === "influencer") {
-                    if (!data.flag){myRouter.push("/influencer/home");} 
-                    else { alertStore.error("You have been blocked by Admin")}
-                } 
-                else if (userT === "sponsor") {
-                    if (!data.flag){myRouter.push("/sponsor/home");} 
-                    else { alertStore.error("You have been blocked by Admin")}
-                } 
-                else if (userT === "admin"){
-                    myRouter.push("/admin")
-                }
-            }
-        }
-    }
+    // async function whichpage() {
+    //     let user_id = localStorage.getItem("user_id")
+    //     if (user_id) {
+    //         let result= await getUserById(user_id)
+    //         if (result){
+    //             let data=result.userData
+    //             let userT = localStorage.getItem("userType");
+    //             if (userT === "influencer") {
+    //                 if (!data.flag){myRouter.push("/influencer/home");} 
+    //                 else { alertStore.error("You have been blocked by Admin")}
+    //             } 
+    //             else if (userT === "sponsor") {
+    //                 if (!data.flag){myRouter.push("/sponsor/home");} 
+    //                 else { alertStore.error("You have been blocked by Admin")}
+    //             } 
+    //             else if (userT === "admin"){
+    //                 myRouter.push("/admin")
+    //             }
+    //         }
+    //     }
+    // }
 
     async function login(userData) {
         const userDetails = {
@@ -75,38 +76,42 @@ export const useUserStore = defineStore('userStore', () => {
             let result= await axios.post("http://127.0.0.1:5000/login", userDetails);
             let data = result.data;
 
+            if (data) {
+                localStorage.setItem("jwt", data.jwt);
+                localStorage.setItem("user_id", data.user_id);
+                localStorage.setItem("exp", data.exp);
+                localStorage.setItem("userType", data.userType);
+            }
+            else {
+                console.log(data);
+                myRouter.push("/");
+            }
+
+            let selectedUser = await getUserById(data.user_id);
+            if (selectedUser.userData.flag == true){
+                localStorage.clear();
+                throw new Error('Blocked by Admin')
+            }
+            if (selectedUser.userData.status == "pending"){
+                localStorage.clear();
+                throw new Error('Yet to be approved')
+            }
+
             if(data.userType == "sponsor"){
-                if (data.flag == true){
-                    throw new Error('Yet to be Approve or blocked by Admin')
-                }
                 await sponsorStore.getAllSponsors();
                 let selectedSponsor = sponsorStore.allSponsors.filter(s => s.user_id == data.user_id);
                 localStorage.setItem("sponsor_id", selectedSponsor[0].id);
+                myRouter.push("/sponsor/home");
             }
 
             if(data.userType == "influencer"){
                 await influencerStore.getAllInfluencer();
                 let selectedInfluencer = influencerStore.allInfluencer.filter(i => i.user_id == data.user_id);
                 localStorage.setItem("influencer_id", selectedInfluencer[0].id);
+                myRouter.push("/influencer/home");
             }
-
-            if (data) {
-                localStorage.setItem("jwt", data.jwt);
-                localStorage.setItem("user_id", data.user_id);
-                localStorage.setItem("exp", data.exp);
-                localStorage.setItem("userType", data.userType);
-                if (data.userType === "influencer") {
-                    myRouter.push("/influencer/home");
-                } else if (data.userType === "sponsor") {
-                    myRouter.push("/sponsor/home");
-                }
-                else if (data.userType === "admin") {
-                    myRouter.push("/admin");
-                }
-            }
-            else {
-                console.log(data);
-                myRouter.push("/");
+            if(data.userType == "admin"){
+                myRouter.push("/admin");
             }
         }
         catch (error) {
@@ -151,7 +156,7 @@ export const useUserStore = defineStore('userStore', () => {
 
     async function updateUser(formData){
         try{
-            await axios.put(`http://127.0.0.1:5000/user/${localStorage.getItem('user_id')}`, formData);
+            await axios.put(`http://127.0.0.1:5000/user/${formData.id}`, formData);
             alertStore.success("user updated successfully")
         }
         catch(error){
@@ -165,7 +170,6 @@ export const useUserStore = defineStore('userStore', () => {
         alertStore,
         myRouter,
         login,
-        whichpage,
         getUserById,
         getAlluser,
         updateUser,
