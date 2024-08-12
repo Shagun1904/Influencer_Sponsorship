@@ -53,14 +53,14 @@ export const useRequestStore = defineStore('requestStore', () => {
         }
     }
 
-    async function getCampaignByRequestId(id){
+    async function getCampaignByRequestId(request){
         try{
             let result = await axios.get(`http://127.0.0.1:5000/campaign`);
             let data = result.data;
             let campaign =[]
             for (let i in data){
-                if (data[i].id==id){
-                    campaign.push(data[i])
+                if (data[i].id==request.campaign_id){
+                    campaign = data[i]
                 }
             }
             return {

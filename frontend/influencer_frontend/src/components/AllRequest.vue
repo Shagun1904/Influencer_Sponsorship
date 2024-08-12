@@ -167,7 +167,7 @@ const campaignModal = shallowRef(null);
 const currentSelectedCampaign = ref(null);
 
 const openModal = (async (request) => {
-    let result = await requestStore.getCampaignByRequestId(request.id)
+    let result = await requestStore.getCampaignByRequestId(request)
     currentSelectedCampaign.value = { ...result.campaign};
     campaignModal.value = defineAsyncComponent(() => import("../components/CampaignViewModal.vue"))
     isModalVisible.value = true;

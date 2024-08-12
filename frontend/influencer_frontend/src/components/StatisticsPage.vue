@@ -1,22 +1,74 @@
 <template>
-    <div>
-        <div>
-            <PieChart :chart-data="chartData" :chart-options="chartOptions" />
+    <div class="statistics-container">
+        <h2>Statistics</h2>
+        <div v-if="userType === 'admin'" class="stats-section">
+            <div class="stat-item">
+                <span class="stat-label">Total Users:</span>
+                <span class="stat-value">{{ allUsers.length }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Total Influencers:</span>
+                <span class="stat-value">{{ allInfluencer.length }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Total Sponsors:</span>
+                <span class="stat-value">{{ allSponsors.length }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Total Campaigns:</span>
+                <span class="stat-value">{{ allCampaign.length }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Total Requests:</span>
+                <span class="stat-value">{{ allRequest.length }}</span>
+            </div>
+        </div>
+        <div v-else-if="userType === 'sponsor'" class="stats-section">
+            <div class="stat-item">
+                <span class="stat-label">Total Campaigns:</span>
+                <span class="stat-value">{{ allCampaign.length }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Accepted Requests:</span>
+                <span class="stat-value">{{ acceptedRequests }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Rejected Requests:</span>
+                <span class="stat-value">{{ rejectedRequests }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Pending Requests:</span>
+                <span class="stat-value">{{ pendingRequests }}</span>
+            </div>
+        </div>
+        <div v-else-if="userType === 'influencer'" class="stats-section">
+            <div class="stat-item">
+                <span class="stat-label">Sent Requests:</span>
+                <span class="stat-value">{{ sentRequests }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Accepted Requests:</span>
+                <span class="stat-value">{{ acceptedRequests }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Rejected Requests:</span>
+                <span class="stat-value">{{ rejectedRequests }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Received Requests:</span>
+                <span class="stat-value">{{ receivedRequests }}</span>
+            </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { PieChart } from 'vue-chartjs';
 import { useUserStore } from '../stores/userStore';
 import { useInfluencerStore } from '../stores/influencerStore';
 import { useSponsorStore } from '../stores/sponsorStore';
 import { useCampaignStore } from '../stores/campaignStore';
 import { useRequestStore } from '../stores/requestStore';
-import { Chart as ChartJS, BarElement, LineElement, ArcElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
-
-ChartJS.register(BarElement, LineElement, ArcElement, CategoryScale, LinearScale, Tooltip, Legend);
+import { onMounted, ref } from 'vue';
 
 const userStore = useUserStore();
 const influencerStore = useInfluencerStore();
@@ -30,11 +82,13 @@ let allSponsors = ref([]);
 let allCampaign = ref([]);
 let allRequest = ref([]);
 
-// const adminChartData = ref({});
-// const sponsorChartData = ref({});
-// const influencerChartData = ref({});
+let acceptedRequests = ref(0);
+let rejectedRequests = ref(0);
+let pendingRequests = ref(0);
+let sentRequests = ref(0);
+let receivedRequests = ref(0);
 
-// const userType = localStorage.getItem('userType');
+const userType = localStorage.getItem('userType');
 
 const getAllUsers = async () => {
     await userStore.getAlluser();
@@ -59,89 +113,18 @@ const getAllCampaign = async () => {
 const getAllRequest = async () => {
     let result = await requestStore.getAllRequest();
     allRequest.value = result.allRequestData;
-};
 
-const chartData = ref({
-    labels: ['Users', 'Sponsors', 'Influencers', 'Campaigns', 'Requests'],
-    datasets: [{
-        label: 'Overview',
-        data: [0, 0, 0, 0, 0], // Initial empty data
-        backgroundColor: [
-            'rgb(255, 99, 132)',  // Red
-            'rgb(54, 162, 235)',  // Blue
-            'rgb(201, 203, 207)', // Grey
-            'rgb(255, 205, 86)',  // Yellow
-            'rgb(75, 192, 192)'   // Green
-        ],
-        hoverOffset: 4
-    }]
-});
-
-const chartOptions = ref({
-    responsive: true,
-    plugins: {
-        legend: {
-            position: 'top',
-        },
-        title: {
-            display: true,
-            text: 'Data Overview'
-        }
+    if (userType === 'sponsor') {
+        acceptedRequests.value = result.allRequestData.filter(req => req.status === 'accepted').length;
+        rejectedRequests.value = result.allRequestData.filter(req => req.status === 'rejected').length;
+        pendingRequests.value = result.allRequestData.filter(req => req.status === 'pending').length;
+    } else if (userType === 'influencer') {
+        sentRequests.value = result.allRequestData.filter(req => req.senderType === 'influencer').length;
+        acceptedRequests.value = result.allRequestData.filter(req => req.status === 'accepted' && req.senderType === 'influencer').length;
+        rejectedRequests.value = result.allRequestData.filter(req => req.status === 'rejected' && req.senderType === 'influencer').length;
+        receivedRequests.value = result.allRequestData.filter(req => req.receiverType === 'influencer').length;
     }
-});
-
-
-const fetchData = async () => {
-    await Promise.all([
-        getAllUsers(),
-        getAllInfluencer(),
-        getAllSponsor(),
-        getAllCampaign(),
-        getAllRequest()
-    ]);
-
-    chartData.value.datasets[0].data = [
-        userStore.alluser.length,
-        sponsorStore.allSponsors.length,
-        influencerStore.allInfluencer.length,
-        // campaignStore.allCampaignsData.length,
-        // requestStore.allRequestData.length
-    ];
 };
-
-// const setupSponsorChart = () => {
-//     const accepted = allRequest.value.filter(req => req.status == 'accepted').length;
-//     const rejected = allRequest.value.filter(req => req.status == 'rejected').length;
-//     const pending = allRequest.value.filter(req => req.status == 'pending').length;
-
-//     sponsorChartData.value = {
-//         labels: ['Accepted', 'Rejected', 'Pending'],
-//         datasets: [
-//             {
-//                 label: 'Request Status',
-//                 data: [accepted, rejected, pending],
-//                 backgroundColor: ['#36a2eb', '#ff6384', '#ffce56'],
-//             },
-//         ],
-//     };
-// };
-
-// const setupInfluencerChart = () => {
-//     const sentRequests = allRequest.value.filter(req => req.sentBy === userStore.currentUser.id).length;
-//     const acceptedRequests = allRequest.value.filter(req => req.sentBy === userStore.currentUser.id && req.status === 'accepted').length;
-//     const receivedRequests = allRequest.value.filter(req => req.receivedBy === userStore.currentUser.id).length;
-
-//     influencerChartData.value = {
-//         labels: ['Sent Requests', 'Accepted Requests', 'Received Requests'],
-//         datasets: [
-//             {
-//                 label: 'Requests',
-//                 data: [sentRequests, acceptedRequests, receivedRequests],
-//                 backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe'],
-//             },
-//         ],
-//     };
-// };
 
 onMounted(async () => {
     await getAllUsers();
@@ -149,19 +132,48 @@ onMounted(async () => {
     await getAllSponsor();
     await getAllCampaign();
     await getAllRequest();
-    // setupAdminChart();
-    await fetchData();
-    // if (userType == 'admin') {
-    //     setupAdminChart();
-    // } else if (userType == 'sponsor') {
-    //     setupSponsorChart();
-    // } else if (userType == 'influencer') {
-    //     setupInfluencerChart();
-    // }
 });
-
 </script>
 
 <style scoped>
-/* Add any custom styles if needed */
+.statistics-container {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+h2 {
+    text-align: center;
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.stats-section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    background-color: #fff;
+    padding: 10px 15px;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.stat-label {
+    font-weight: bold;
+    color: #555;
+}
+
+.stat-value {
+    font-size: 18px;
+    color: #000;
+}
 </style>

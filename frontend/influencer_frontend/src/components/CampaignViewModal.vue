@@ -7,12 +7,12 @@
                     <button type="button" class="btn-close ms-auto" @click="closeModal"></button>
                 </div>
                 <div class="modal-body">
-                    <h4><strong>Category: </strong> {{ props.campaign[0].name }}</h4>
-                    <h4><strong>Description: </strong> {{ props.campaign[0].description }}</h4>
-                    <h4><strong>Goal: </strong> {{ props.campaign[0].goal }}</h4>
-                    <h4><strong>Campaign Budget: </strong> {{ props.campaign[0].campaignBudget }}</h4>
-                    <h4><strong>Start Date: </strong> {{ props.campaign[0].startDate }}</h4>
-                    <h4><strong>End Date: </strong> {{ props.campaign[0].endDate }}</h4>
+                    <h4><strong>Name: </strong> {{ props.campaign.name }}</h4>
+                    <h4><strong>Description: </strong> {{ props.campaign.description }}</h4>
+                    <h4><strong>Goal: </strong> {{ props.campaign.goal }}</h4>
+                    <h4><strong>Campaign Budget: </strong> {{ props.campaign.campaignBudget }}</h4>
+                    <h4><strong>Start Date: </strong> {{ props.campaign.startDate }}</h4>
+                    <h4><strong>End Date: </strong> {{ props.campaign.endDate }}</h4>
                 </div>
             </div>
         </div>

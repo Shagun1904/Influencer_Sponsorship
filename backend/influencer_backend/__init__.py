@@ -16,6 +16,9 @@ def app(config_class=LocalConfig):
         origins="http://localhost:8081"
     )
 
+    from tasks import celery_app
+    celery_app.conf.update(app.config)
+
     #Register Blueprints Here
     from influencer_backend.main import login_bp as lbp
     app.register_blueprint(lbp)
@@ -39,4 +42,10 @@ def app(config_class=LocalConfig):
     def demopage():
         return '<h1> welcome </h1>'
     
+    @app.route("/add/<int:x>/<int:y>")
+    def add(x, y):
+        from backend.tasks import add
+        result =add.delay(x, y)
+        return {"task_id": result.id}
+
     return app

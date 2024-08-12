@@ -9,7 +9,6 @@ class Influencers(db.Model,UserMixin):
     category=Column(String(64), index=True)
     niche=Column(String(100), nullable=False)
     reach=Column(Integer, nullable=False)
-    path=Column(String(200))
     furl=Column(String(150))
     iurl=Column(String(150))
     lurl=Column(String(150))
